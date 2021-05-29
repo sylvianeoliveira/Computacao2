@@ -1,11 +1,13 @@
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
-public class Pacotinho implements Colecionavel{
+public class Pacotinho<T extends Colecionavel>{
 
     private Repositorio repo;
     private int[] posicoesDesejadas;
-    private Colecionavel[] pacote;
+    private List<T> pacote;
 
     public Pacotinho(Repositorio repo, int[] posicoesDesejadas) {
         if(posicoesDesejadas.length != 3){
@@ -14,10 +16,12 @@ public class Pacotinho implements Colecionavel{
         this.posicoesDesejadas = new int[3];
         this.posicoesDesejadas = posicoesDesejadas;
         this.repo = repo;
-        pacote = new Colecionavel[3];
-
+        this.pacote = new ArrayList<>(3);
+        for (int i = 0; i < 3; i++) {
+            this.pacote.add(null);
+        }
         for(int i=0; i < 3; i++){
-             pacote[i] = this.repo.getItem(this.posicoesDesejadas[i]);
+             this.pacote.set(i, (T) this.repo.getItem(this.posicoesDesejadas[i]));
         }
     }
 
@@ -34,26 +38,18 @@ public class Pacotinho implements Colecionavel{
         }
         this.posicoesDesejadas = new int[quantFigurinhas];
         this.repo = repo;
-        pacote = new Colecionavel[3];
-
+        this.pacote = new ArrayList<>(3);
+        for (int i = 0; i < 3; i++) {
+            this.pacote.add(null);
+        }
         for(int i=0; i < 3; i++){
             Random r = new Random();
             this.posicoesDesejadas[i] = r.nextInt(200) + 1;
-            pacote[i] = this.repo.getItem(this.posicoesDesejadas[i]);
+            this.pacote.set(i, (T) this.repo.getItem(this.posicoesDesejadas[i]));
         }
     }
 
-    public Colecionavel[] getItens() {
+    public List<T> getItens() {
         return pacote;
-    }
-
-    @Override
-    public Image getImagem() {
-        return null;
-    }
-
-    @Override
-    public int getPosicao() {
-        return 0;
     }
 }

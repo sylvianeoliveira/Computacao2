@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Album {
+public class Album<T extends Colecionavel> {
 
     public static final int PERCENTUAL_MINIMO_PARA_AUTO_COMPLETAR = 90;
 
@@ -13,9 +13,8 @@ public class Album {
     private final Repositorio repositorio;
     private final int quantItensPorPacotinho;
 
-    private List<Colecionavel> itensColados;  // direct addressing
+    private List<T> itensColados;  // direct addressing
     private int quantItensColados;
-
 
     // poderíamos fazer novamente direct addressing para as repetidas,
     // mas vamos usar um HashMap aqui só para treinarmos
@@ -36,13 +35,14 @@ public class Album {
         this.contRepetidosbyPosicao = new HashMap<>();
     }
 
-    public void receberNovoPacotinho(Pacotinho pacotinho) {
-        Colecionavel[] itensDoPacotinho = pacotinho.getItens();
-        if (itensDoPacotinho == null || itensDoPacotinho.length != this.quantItensPorPacotinho) {
+    public void receberNovoPacotinho(Pacotinho<T> pacotinho) {
+        List<T> itensDoPacotinho;
+        itensDoPacotinho = pacotinho.getItens();
+        if (itensDoPacotinho == null || itensDoPacotinho.size() != this.quantItensPorPacotinho) {
             return;  // melhor ainda: lançaria uma checked exception
         }
 
-        for (Colecionavel item : pacotinho.getItens()) {
+        for (T item : itensDoPacotinho) {
             final int posicao = item.getPosicao();
             if (possuiItemColado(posicao)) {
                 // adiciona como repetida
@@ -58,7 +58,7 @@ public class Album {
         }
     }
 
-    public Colecionavel getItemColado(int posicao) {
+    public T getItemColado(int posicao) {
         if (possuiItemColado(posicao)) {
             return itensColados.get(posicao);
         }
@@ -102,7 +102,7 @@ public class Album {
         }
         for (int i = 1; i <= tamanhoAlbum; i++) {
             if (itensColados.get(i) == null) {
-                this.itensColados.set(i, repositorio.getItem(i));
+                this.itensColados.set(i, (T) repositorio.getItem(i));
                 this.quantItensColados++;
             }
         }

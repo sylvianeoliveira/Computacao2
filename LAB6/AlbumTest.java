@@ -5,20 +5,24 @@ import static org.junit.Assert.*;
 
 public class AlbumTest {
 
-    private Album albumFigurinhas;
-    private Repositorio repositorioFigurinhas;
+    private Album<Figurinha> albumFigurinhas;
+    private Repositorio<Figurinha> repositorioFigurinhas;
+
+    //novos atributos, da parte 5
+    private Album<Selo> albumSelos;
+    private Repositorio<Selo> repositorioSelos;
 
     private static final int TAMANHO_DO_ALBUM = 200;
     private static final int ITENS_POR_PACOTE = 3;
 
     @Before  // roda antes de cada teste
     public void setUp() {
-        this.repositorioFigurinhas = new Repositorio("album_copa2014", TAMANHO_DO_ALBUM);
+        this.repositorioFigurinhas = new Repositorio("album_copa2014", TAMANHO_DO_ALBUM, new Figurinha(0, "fig"));
         this.albumFigurinhas = new Album(repositorioFigurinhas, ITENS_POR_PACOTE);
     }
 
     private void popularAlbum(int[] posicoesDesejadas) {
-        Pacotinho pacote = new Pacotinho(this.repositorioFigurinhas, posicoesDesejadas);
+        Pacotinho<Figurinha> pacote = new Pacotinho<>(this.repositorioFigurinhas, posicoesDesejadas);
         this.albumFigurinhas.receberNovoPacotinho(pacote);
     }
 
@@ -125,4 +129,30 @@ public class AlbumTest {
                 0, albumFigurinhas.getQuantItensColados());
     }
 
+   @Test
+    public void testarInstanciaUnica(){
+        repositorioSelos = new Repositorio<>("albumSelos", TAMANHO_DO_ALBUM, new Selo(0, "selo", 20));
+        albumSelos = new Album<>(repositorioSelos, ITENS_POR_PACOTE);
+
+        popularAlbum(new int[]{4, 8, 15});
+
+        int[] posicoesSelos = {17, 45, 59};
+        Pacotinho<Selo> pacoteSelo = new Pacotinho<>(this.repositorioSelos, posicoesSelos);
+        this.albumSelos.receberNovoPacotinho(pacoteSelo);
+
+        Selo selo = albumSelos.getItemColado(17);
+        assertNotNull("Selos já inseridas devem ser encontradas",
+                selo);
+
+        Figurinha figurinha = albumFigurinhas.getItemColado(15);
+        assertNotNull("Figurinhas já inseridas devem ser encontradas",
+                figurinha);
+
+        //Não deve compilar
+/*
+        Pacotinho <Figurinha> pacoteFigurinhas = new Pacotinho<>(this.repositorioFigurinhas, new int[] {2,4,6});
+        this.albumSelos.receberNovoPacotinho(pacoteSelos);
+
+*/
+    }
 }
